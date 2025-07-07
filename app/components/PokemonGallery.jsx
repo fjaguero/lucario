@@ -10,11 +10,25 @@ export default function PokemonGallery() {
   useEffect(() => {
     // TODO: Fetch Pokemon data from PokeAPI
     // GET https://pokeapi.co/api/v2/pokemon?limit=20
-    setLoading(false);
-  }, []);
+    const fetchPokemon = async () => {
+      try {
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20');
+        const data = await response.json();
+        setPokemon(data.results);
+        setLoading(true);
+        console.log(data);
+      } catch(error) {
+        console.error('Error fetching Pokemon:', error);
+        setLoading(false);
+      } finally {setLoading(false);}
 
+    };
+    fetchPokemon();
+  }, []);
+  console.log(loading);
   if (loading) {
     return (
+    
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
@@ -23,10 +37,9 @@ export default function PokemonGallery() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {/* TODO: Map through pokemon array and render PokemonCard components */}
-      <div className="text-center text-gray-500">
-        Pokemon cards will be rendered here
-      </div>
+      { pokemon.map((pokemonItem, index) => (
+        <PokemonCard key={index} pokemon={pokemonItem} />
+      ))}
     </div>
   );
 } 
