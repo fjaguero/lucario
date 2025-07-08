@@ -4,41 +4,61 @@ import { useState, useEffect } from 'react';
 import PokemonCard from './PokemonCard';
 
 export default function PokemonGallery() {
-  const [pokemon, setPokemon] = useState([]);
+  const [pokemons, setPokemons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TODO: Fetch Pokemon data from PokeAPI
-    // GET https://pokeapi.co/api/v2/pokemon?limit=20
-    const fetchPokemon = async () => {
+    async function fetchPokemons() {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20');
-        const data = await response.json();
-        setPokemon(data.results);
-        setLoading(true);
-        console.log(data);
-      } catch(error) {
-        console.error('Error fetching Pokemon:', error);
+        const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20');
+        if (!res.ok) throw new Error('Failed to fetch Pokémon');
+        const data = await res.json();
+        setPokemons(data.results);
+      } catch (err) {
+        setError(err.message);
+      } finally {
         setLoading(false);
-      } finally {setLoading(false);}
-
-    };
-    fetchPokemon();
+      }
+    }
+    fetchPokemons();
   }, []);
-  console.log(loading);
+
   if (loading) {
     return (
     
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        <p className="ml-4 text-gray-600">Loading Pokémon...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-red-600 mb-2">Error loading Pokémon</p>
+          <p className="text-gray-500 text-sm">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (pokemons.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <p className="text-gray-600">No Pokémon found</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      { pokemon.map((pokemonItem, index) => (
-        <PokemonCard key={index} pokemon={pokemonItem} />
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-items-center">
+      {pokemons.map((pokemon) => (
+        <PokemonCard key={pokemon.name} pokemon={pokemon} />
       ))}
     </div>
   );
