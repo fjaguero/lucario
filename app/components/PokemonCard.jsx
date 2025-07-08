@@ -11,10 +11,8 @@ export default function PokemonCard({ pokemon }) {
   const pokemonId = pokemon.url.split('/').filter(Boolean).pop();
 
   const handleClick = () => {
-    // TODO: Navigate to Pokemon details page
-    // router.push(`/pokemon/${pokemonId}`);
+    // Navigate to Pokemon details page
     router.push(`/pokemon/${pokemonId}`);
-    console.log('Navigate to Pokemon details:', pokemonId);
   };
 
   return (
